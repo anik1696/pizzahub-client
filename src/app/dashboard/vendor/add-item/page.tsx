@@ -72,6 +72,11 @@ export default function AddMenuItemPage() {
     </div>
   );
 
+  if (!user || user.role !== "vendor") {
+    router.push("/dashboard");
+    return null;
+  }
+
   return (
     <div className="max-w-2xl mx-auto">
       <div className="mb-8">
