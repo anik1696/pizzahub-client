@@ -1,36 +1,97 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PizzaHub — Pizza Ordering & Delivery Platform (Client)
 
-## Getting Started
+> Next.js 16 frontend for PizzaHub — a full-stack pizza ordering and delivery platform.
 
-First, run the development server:
+## 🍕 Live Site
+
+[https://pizzahub.vercel.app](https://pizzahub.vercel.app) *(update after deployment)*
+
+## ⚡ Quick Start
 
 ```bash
+npm install
+cp .env.local.example .env.local
+# Fill in your environment variables
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🔐 Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+NEXT_PUBLIC_API_URL=http://localhost:5000
+NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:5000
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+NEXT_PUBLIC_IMGBB_API_KEY=your_imgbb_key
+```
 
-## Learn More
+## 🛠️ Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+| Package | Purpose |
+|---------|---------|
+| `next` | React framework (App Router) |
+| `better-auth` | Authentication client |
+| `axios` | HTTP client with interceptors |
+| `framer-motion` | Page & component animations |
+| `react-hot-toast` | Toast notifications |
+| `next-themes` | Dark/light mode |
+| `react-icons` | Icon library (react-icons/fi, gi, fa6) |
+| `@stripe/stripe-js` | Stripe payment client |
+| `tailwindcss` v4 | Utility-first CSS |
+| `shadcn/ui` | Accessible UI components |
+| `clsx` + `tailwind-merge` | Class name utilities |
+| `date-fns` | Date formatting |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📁 Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+src/
+├── app/
+│   ├── (main)/              # Public pages (Navbar + Footer)
+│   │   ├── page.tsx         # Home page
+│   │   └── menu/            # Browse menu + item details
+│   ├── (auth)/              # Auth pages (full-screen)
+│   │   ├── signin/
+│   │   └── signup/
+│   ├── dashboard/           # Role-based dashboards (sidebar layout)
+│   │   ├── layout.tsx       # Sidebar + role guard
+│   │   ├── customer/
+│   │   ├── vendor/
+│   │   └── admin/
+│   ├── payment/             # Stripe success/cancel
+│   ├── profile/             # Profile settings
+│   └── not-found.tsx        # Custom 404
+├── components/
+│   ├── shared/              # Navbar, Footer, LoadingPage
+│   ├── home/                # HomePage sections
+│   └── menu/                # MenuItemCard
+├── contexts/
+│   ├── AuthContext.tsx      # Auth state + login/register/logout
+│   └── ThemeProvider.tsx    # Dark/light mode
+└── lib/
+    ├── api.ts               # Axios instance with JWT interceptor
+    ├── auth-client.ts       # Better Auth client
+    └── utils.ts             # cn(), formatPrice(), CATEGORIES, etc.
+```
 
-## Deploy on Vercel
+## 🔑 Important Notes
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Admin access**: Cannot be created via signup. Set `role: "admin"` in MongoDB directly.
+- **Protected routes**: All `/dashboard/*` routes check authentication and role server-side via JWT.
+- **Stripe**: Only used for vendor Premium subscription. Pizza ordering does NOT require payment.
+- **ImgBB**: Used for menu item image uploads only. Profile images are also uploaded via ImgBB.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🧪 Testing
+
+Use Stripe test card: `4242 4242 4242 4242` | Any future date | Any CVC
+
+## 🏗️ Challenge Features
+
+### Advanced Search & Sort
+- Menu Browse page supports `search`, `category`, `location`, `sort` query params
+- Sort options: `newest`, `price_asc`, `price_desc`
+
+### Dark / Light Mode
+- Toggle button in Navbar and Dashboard header
+- Persisted via `next-themes` with `localStorage`
