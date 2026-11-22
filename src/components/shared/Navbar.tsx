@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "next-themes";
@@ -12,6 +12,10 @@ export default function Navbar() {
   const { theme, setTheme } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Avoid hydration mismatch — only render theme icon after mount
+  useEffect(() => { setMounted(true); }, []);
 
   const getDashboardLink = () => {
     if (!user) return "/signin";
@@ -46,7 +50,7 @@ export default function Navbar() {
               className="p-2 rounded-lg hover:bg-accent transition-colors"
               aria-label="Toggle theme"
             >
-              {theme === "dark" ? <FiSun className="h-5 w-5" /> : <FiMoon className="h-5 w-5" />}
+              {mounted && (theme === "dark" ? <FiSun className="h-5 w-5" /> : <FiMoon className="h-5 w-5" />)}
             </button>
 
             {loading ? (
@@ -98,7 +102,7 @@ export default function Navbar() {
           {/* Mobile */}
           <div className="md:hidden flex items-center gap-2">
             <button onClick={() => setTheme(theme === "dark" ? "light" : "dark")} className="p-2 rounded-lg hover:bg-accent transition-colors">
-              {theme === "dark" ? <FiSun className="h-5 w-5" /> : <FiMoon className="h-5 w-5" />}
+              {mounted && (theme === "dark" ? <FiSun className="h-5 w-5" /> : <FiMoon className="h-5 w-5" />)}
             </button>
             <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2 rounded-lg hover:bg-accent transition-colors">
               {mobileOpen ? <FiX className="h-6 w-6" /> : <FiMenu className="h-6 w-6" />}
