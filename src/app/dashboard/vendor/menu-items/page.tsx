@@ -57,7 +57,7 @@ export default function VendorMenuItemsPage() {
 
   const openEdit = (item: any) => {
     setEditItem(item);
-    setEditForm({ itemName: item.itemName, category: item.category, description: item.description, price: item.price, location: item.location });
+    setEditForm({ itemName: item.itemName || item.name || "", category: item.category, description: item.description, price: item.price, location: item.location });
   };
 
   const handleSaveEdit = async (e: React.FormEvent) => {
@@ -107,8 +107,8 @@ export default function VendorMenuItemsPage() {
           {items.map((item) => (
             <div key={item._id} className="bg-card border border-border rounded-2xl overflow-hidden">
               <div className="relative h-48">
-                {item.images?.[0] ? (
-                  <img src={item.images[0]} alt={item.itemName} className="w-full h-full object-cover" />
+                {(item.images?.[0] || item.image) ? (
+                  <img src={item.images?.[0] || item.image} alt={item.itemName || item.name} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full bg-muted flex items-center justify-center text-5xl">🍕</div>
                 )}
