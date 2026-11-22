@@ -109,10 +109,10 @@ export default function AdminMenuItemsClient() {
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-12 h-12 rounded-xl overflow-hidden bg-muted flex-shrink-0">
-                          {item.images?.[0] ? <img src={item.images[0]} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center">🍕</div>}
+                          {(item.images?.[0] || item.image) ? <img src={item.images?.[0] || item.image} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center">🍕</div>}
                         </div>
                         <div>
-                          <p className="font-semibold text-sm text-foreground">{item.itemName}</p>
+                          <p className="font-semibold text-sm text-foreground">{item.itemName || item.name}</p>
                           <p className="text-xs text-muted-foreground">{item.location}</p>
                         </div>
                       </div>
