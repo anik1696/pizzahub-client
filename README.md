@@ -1,6 +1,6 @@
-# PizzaHub — Pizza Ordering & Delivery Platform (Client)
+# PizzaHub — Pizza Ordering & Delivery Platform
 
-> Next.js 16 frontend for PizzaHub — a full-stack pizza ordering and delivery platform.
+> Next.js 15 frontend for PizzaHub — a full-stack pizza ordering and delivery platform built for Bangladesh.
 
 ## 🍕 Live Site
 
@@ -10,7 +10,7 @@
 
 ```bash
 npm install
-cp .env.local.example .env.local
+cp .env.example .env.local
 # Fill in your environment variables
 npm run dev
 ```
@@ -19,79 +19,60 @@ Open [http://localhost:3000](http://localhost:3000)
 
 ## 🔐 Environment Variables
 
-```
-NEXT_PUBLIC_API_URL=http://localhost:5000
-NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:5000
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
-NEXT_PUBLIC_IMGBB_API_KEY=your_imgbb_key
-```
+| Variable | Description |
+|----------|-------------|
+| `NEXT_PUBLIC_API_URL` | Express backend URL (e.g. https://pizzahub-server.onrender.com) |
+| `NEXT_PUBLIC_BETTER_AUTH_URL` | This app's URL (e.g. https://pizzahub.vercel.app) |
+| `MONGODB_URI` | MongoDB Atlas connection string |
+| `BETTER_AUTH_SECRET` | Secret for Better Auth session signing |
+| `BETTER_AUTH_URL` | Same as `NEXT_PUBLIC_BETTER_AUTH_URL` |
+| `GOOGLE_CLIENT_ID` | Google OAuth Client ID |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth Client Secret |
+| `JWT_SECRET` | JWT signing secret |
 
 ## 🛠️ Tech Stack
 
 | Package | Purpose |
 |---------|---------|
 | `next` | React framework (App Router) |
-| `better-auth` | Authentication client |
+| `better-auth` | Authentication (Google OAuth + email/password) |
 | `axios` | HTTP client with interceptors |
 | `framer-motion` | Page & component animations |
 | `react-hot-toast` | Toast notifications |
 | `next-themes` | Dark/light mode |
-| `react-icons` | Icon library (react-icons/fi, gi, fa6) |
-| `@stripe/stripe-js` | Stripe payment client |
+| `react-icons` | Icon library |
+| `recharts` | Analytics charts in dashboards |
 | `tailwindcss` v4 | Utility-first CSS |
 | `shadcn/ui` | Accessible UI components |
 | `clsx` + `tailwind-merge` | Class name utilities |
-| `date-fns` | Date formatting |
 
 ## 📁 Project Structure
 
 ```
 src/
 ├── app/
-│   ├── (main)/              # Public pages (Navbar + Footer)
-│   │   ├── page.tsx         # Home page
-│   │   └── menu/            # Browse menu + item details
-│   ├── (auth)/              # Auth pages (full-screen)
-│   │   ├── signin/
-│   │   └── signup/
-│   ├── dashboard/           # Role-based dashboards (sidebar layout)
-│   │   ├── layout.tsx       # Sidebar + role guard
-│   │   ├── customer/
-│   │   ├── vendor/
-│   │   └── admin/
-│   ├── payment/             # Stripe success/cancel
-│   ├── profile/             # Profile settings
-│   └── not-found.tsx        # Custom 404
+│   ├── (auth)/          # Sign in / Sign up pages
+│   ├── (main)/          # Public pages (Home, Menu)
+│   ├── api/             # Next.js API routes (auth, jwt)
+│   ├── auth/            # OAuth callback handler
+│   ├── dashboard/       # Admin, Vendor, Customer dashboards
+│   ├── payment/         # Order confirmed / cancelled pages
+│   └── profile/         # User profile settings
 ├── components/
-│   ├── shared/              # Navbar, Footer, LoadingPage
-│   ├── home/                # HomePage sections
-│   └── menu/                # MenuItemCard
-├── contexts/
-│   ├── AuthContext.tsx      # Auth state + login/register/logout
-│   └── ThemeProvider.tsx    # Dark/light mode
-└── lib/
-    ├── api.ts               # Axios instance with JWT interceptor
-    ├── auth-client.ts       # Better Auth client
-    └── utils.ts             # cn(), formatPrice(), CATEGORIES, etc.
+│   ├── home/            # Homepage sections
+│   ├── menu/            # Menu item card
+│   ├── shared/          # Navbar, Footer, Layout
+│   └── ui/              # shadcn/ui components
+├── contexts/            # AuthContext, ThemeProvider
+└── lib/                 # API client, auth config, utilities
 ```
 
-## 🔑 Important Notes
+## 👥 User Roles
 
-- **Admin access**: Cannot be created via signup. Set `role: "admin"` in MongoDB directly.
-- **Protected routes**: All `/dashboard/*` routes check authentication and role server-side via JWT.
-- **Stripe**: Only used for vendor Premium subscription. Pizza ordering does NOT require payment.
-- **ImgBB**: Used for menu item image uploads only. Profile images are also uploaded via ImgBB.
+| Role | Access |
+|------|--------|
+| **Customer** | Browse menu, place orders, track order history |
+| **Vendor** | Add/manage menu items, view incoming orders |
+| **Admin** | Approve menu items, manage users, view transactions |
 
-## 🧪 Testing
-
-Use Stripe test card: `4242 4242 4242 4242` | Any future date | Any CVC
-
-## 🏗️ Challenge Features
-
-### Advanced Search & Sort
-- Menu Browse page supports `search`, `category`, `location`, `sort` query params
-- Sort options: `newest`, `price_asc`, `price_desc`
-
-### Dark / Light Mode
-- Toggle button in Navbar and Dashboard header
-- Persisted via `next-themes` with `localStorage`
+> Admin accounts cannot self-register. Role must be assigned manually in the database.
