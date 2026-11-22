@@ -24,14 +24,17 @@ export async function POST() {
 
     const col = await getUsersCollection();
     // Better Auth stores user IDs as plain strings (not ObjectId)
-    // Try string _id first, then fall back to id field
+    // Try multiple lookup strategies to reliably find the user
     let user = await col.findOne({ _id: session.user.id } as never);
     if (!user) {
       user = await col.findOne({ id: session.user.id });
     }
+    if (!user && session.user.email) {
+      // Email is the most reliable fallback - always unique
+      user = await col.findOne({ email: session.user.email });
+    }
     if (!user) {
-      // If still not found, build a minimal user from session data
-      // This handles the case where the user document structure differs
+      // Last resort: build from session data with customer role
       user = {
         _id: session.user.id,
         name: session.user.name,
