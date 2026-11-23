@@ -61,6 +61,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             cache: "no-store",
             headers: { "Cache-Control": "no-cache" },
           });
+
+          // 403 = account is blocked — sign them out immediately
+          if (jwtRes.status === 403) {
+            const data = await jwtRes.json();
+            await authClient.signOut();
+            setUser(null);
+            localStorage.removeItem("pizzahub_token");
+            toast.error(data.error || "Your account has been blocked by an administrator.");
+            setLoading(false);
+            return;
+          }
+
           if (jwtRes.ok) {
             const jwtData = await jwtRes.json();
             if (jwtData.token) {
@@ -76,6 +88,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Fallback: build user from Better Auth session directly
         // This ensures Google OAuth users can still access the dashboard
         const su = session.data.user as Record<string, unknown>;
+        // If the session user is blocked in the fallback, sign out too
+        if (su.isBlocked === true) {
+          await authClient.signOut();
+          setUser(null);
+          localStorage.removeItem("pizzahub_token");
+          toast.error("Your account has been blocked by an administrator.");
+          setLoading(false);
+          return;
+        }
         setUser({
           id: su.id as string,
           name: su.name as string,

@@ -47,4 +47,29 @@ export const auth = betterAuth({
       enabled: false,
     },
   },
+  databaseHooks: {
+    session: {
+      create: {
+        before: async (session) => {
+          // Look up the user to check isBlocked BEFORE creating a session
+          const db = getDb();
+          const user = await db.collection("user").findOne(
+            { email: { $exists: true }, _id: session.userId as any },
+            { projection: { isBlocked: 1, email: 1 } }
+          );
+          // Also try by string id field
+          const userByStr = user || await db.collection("user").findOne(
+            { $or: [{ id: session.userId }, { email: session.userId }] },
+            { projection: { isBlocked: 1, email: 1 } }
+          );
+          const target = user || userByStr;
+          if (target?.isBlocked === true) {
+            // Returning false cancels session creation → login fails
+            return false;
+          }
+          return { data: session };
+        },
+      },
+    },
+  },
 });

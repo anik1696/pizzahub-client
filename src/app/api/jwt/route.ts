@@ -47,6 +47,11 @@ export async function POST() {
       };
     }
 
+    // Reject blocked users — force them to be signed out
+    if (user.isBlocked === true) {
+      return NextResponse.json({ error: "Your account has been blocked by an administrator." }, { status: 403 });
+    }
+
     const token = jwt.sign(
       {
         id: user._id,
