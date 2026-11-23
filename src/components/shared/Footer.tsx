@@ -1,11 +1,37 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import { GiFullPizza } from "react-icons/gi";
 import { FaFacebookF, FaInstagram, FaYoutube } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { FiMail, FiPhone, FiMapPin } from "react-icons/fi";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Footer() {
+  const { user } = useAuth();
+
+  // Build navigate links based on auth state
+  const navLinks = [
+    { label: "Home", href: "/" },
+    { label: "Browse Menu", href: "/menu" },
+    ...(!user
+      ? [
+          { label: "Sign In", href: "/signin" },
+          { label: "Create Account", href: "/signup" },
+        ]
+      : []),
+    ...(user?.role === "vendor"
+      ? [{ label: "Vendor Dashboard", href: "/dashboard/vendor" }]
+      : []),
+    ...(user?.role === "admin"
+      ? [{ label: "Admin Panel", href: "/dashboard/admin" }]
+      : []),
+    ...(user?.role === "customer"
+      ? [{ label: "My Orders", href: "/profile/orders" }]
+      : []),
+  ];
+
   return (
     <footer className="bg-card border-t border-border">
       <div className="container mx-auto px-4 py-14 max-w-7xl">
@@ -29,13 +55,7 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold text-foreground mb-4 text-sm uppercase tracking-wider">Navigate</h3>
             <ul className="space-y-2.5">
-              {[
-                { label: "Home", href: "/" },
-                { label: "Browse Menu", href: "/menu" },
-                { label: "Sign In", href: "/signin" },
-                { label: "Create Account", href: "/signup" },
-                { label: "Vendor Dashboard", href: "/dashboard/vendor" },
-              ].map(({ label, href }) => (
+              {navLinks.map(({ label, href }) => (
                 <li key={href}>
                   <Link href={href} className="text-muted-foreground hover:text-primary transition-colors text-sm">
                     {label}
@@ -57,7 +77,7 @@ export default function Footer() {
               </li>
               <li className="flex items-start gap-2.5 text-sm text-muted-foreground">
                 <FiPhone className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" />
-                <span>+1 (800) 749-2284</span>
+                <span>+880 1700-123456</span>
               </li>
               <li className="flex items-start gap-2.5 text-sm text-muted-foreground">
                 <FiMapPin className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" />
