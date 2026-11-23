@@ -99,18 +99,16 @@ export default function AdminDashboard() {
             <FiUsers className="h-5 w-5 text-primary" />
             <h2 className="text-lg font-bold text-foreground">User Distribution</h2>
           </div>
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={240}>
             <PieChart>
               <Pie
                 data={userPieData}
                 cx="50%"
-                cy="50%"
-                innerRadius={55}
-                outerRadius={90}
-                paddingAngle={4}
+                cy="45%"
+                innerRadius={60}
+                outerRadius={85}
+                paddingAngle={5}
                 dataKey="value"
-                label={({ name, value }) => `${name}: ${value}`}
-                labelLine={false}
               >
                 {userPieData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -119,7 +117,7 @@ export default function AdminDashboard() {
               <Tooltip
                 contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: "12px", fontSize: "13px" }}
               />
-              <Legend />
+              <Legend verticalAlign="bottom" height={36} />
             </PieChart>
           </ResponsiveContainer>
         </motion.div>
