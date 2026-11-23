@@ -55,7 +55,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (session?.data?.user) {
         try {
           // Generate JWT from Next.js JWT endpoint (auth runs in Next.js now)
-          const jwtRes = await fetch("/api/jwt", { method: "POST", credentials: "include" });
+          const jwtRes = await fetch("/api/jwt", {
+            method: "POST",
+            credentials: "include",
+            cache: "no-store",
+            headers: { "Cache-Control": "no-cache" },
+          });
           if (jwtRes.ok) {
             const jwtData = await jwtRes.json();
             if (jwtData.token) {
@@ -114,6 +119,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       callbackURL: "/",
     } as Parameters<typeof authClient.signUp.email>[0]);
     if (result.error) throw new Error(result.error.message || "Registration failed");
+
+    // Better Auth may not persist additionalFields from signUp — patch role explicitly
+    try {
+      await fetch("/api/set-role", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          role: data.role,
+          businessName: data.businessName || "",
+        }),
+      });
+    } catch {
+      // Non-fatal — JWT fallback will still try to read from DB
+    }
+
     await fetchUser();
     toast.success("Account created successfully!");
   };

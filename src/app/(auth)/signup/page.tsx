@@ -86,6 +86,7 @@ export default function SignUpPage() {
         image: form.image,
         businessName: form.role === "vendor" ? form.businessName : undefined,
       });
+      // Redirect based on the actual role set
       if (form.role === "vendor") router.push("/dashboard/vendor");
       else router.push("/dashboard/customer");
     } catch (err: any) {
