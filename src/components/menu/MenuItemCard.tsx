@@ -98,15 +98,15 @@ export default function MenuItemCard({ item }: { item: MenuItem }) {
         </h3>
 
         {/* Rating */}
-        {item.rating && (
+        {Boolean(item.rating && item.rating > 0) ? (
           <div className="flex items-center gap-1 mb-1.5">
             <FiStar className="h-3 w-3 text-amber-400 fill-amber-400" />
             <span className="text-xs font-semibold text-foreground">{item.rating.toFixed(1)}</span>
-            {item.reviewCount && (
+            {Boolean(item.reviewCount && item.reviewCount > 0) && (
               <span className="text-xs text-muted-foreground">({item.reviewCount})</span>
             )}
           </div>
-        )}
+        ) : null}
 
         <p className="text-muted-foreground text-xs mb-3 line-clamp-2 flex-1 leading-relaxed">
           {item.description}

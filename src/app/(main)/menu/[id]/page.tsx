@@ -185,7 +185,7 @@ export default function ItemDetailPage() {
             <h1 className="text-4xl font-black text-foreground mb-3">{item.name || item.itemName}</h1>
 
             {/* Rating */}
-            {(item.rating || item.averageRating || item.ratings?.length) && (
+            {Boolean((item.rating && item.rating > 0) || (item.averageRating && item.averageRating > 0) || (item.ratings && item.ratings.length > 0)) && (
               <div className="flex items-center gap-2 mb-4">
                 <div className="flex items-center gap-0.5">
                   {[1, 2, 3, 4, 5].map((s) => {
