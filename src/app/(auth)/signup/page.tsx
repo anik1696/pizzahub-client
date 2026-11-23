@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { FiEye, FiEyeOff, FiMail, FiLock, FiUser, FiBriefcase, FiAlertCircle, FiImage } from "react-icons/fi";
+import { FiEye, FiEyeOff, FiMail, FiLock, FiUser, FiBriefcase, FiAlertCircle, FiImage, FiInfo } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import { GiFullPizza } from "react-icons/gi";
 import { useAuth } from "@/contexts/AuthContext";
@@ -16,15 +16,20 @@ const passwordRules = (pw: string) => ({
   lower: /[a-z]/.test(pw),
 });
 
-export default function SignUpPage() {
-  const { register, loginWithGoogle } = useAuth();
+// Inner component that uses useSearchParams (must be inside Suspense)
+function SignUpForm() {
+  const { register, loginWithGoogle, user, loading } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const asVendor = searchParams.get("as") === "vendor";
+
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
-    role: "customer" as "customer" | "vendor",
+    // Pre-select vendor tab if ?as=vendor
+    role: (asVendor ? "vendor" : "customer") as "customer" | "vendor",
     businessName: "",
     image: "",
   });
@@ -36,6 +41,16 @@ export default function SignUpPage() {
 
   const rules = passwordRules(form.password);
   const allRules = rules.length && rules.upper && rules.lower;
+
+  // If logged in as vendor or admin — redirect to their dashboard
+  // If logged in as CUSTOMER — allow them to stay so they can create a separate vendor account
+  useEffect(() => {
+    if (!loading && user) {
+      if (user.role === "admin") router.push("/dashboard/admin");
+      else if (user.role === "vendor") router.push("/dashboard/vendor");
+      // customers: stay on this page — they can register a new vendor account with a different email
+    }
+  }, [user, loading, router]);
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -153,6 +168,25 @@ export default function SignUpPage() {
             Already have an account?{" "}
             <Link href="/signin" className="text-primary font-semibold hover:underline">Sign In</Link>
           </p>
+
+          {/* Info banner for already-logged-in customers trying to become a vendor */}
+          {user && user.role === "customer" && (
+            <div className="flex items-start gap-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl px-4 py-3 mb-5 text-sm text-blue-800 dark:text-blue-300">
+              <FiInfo className="h-4 w-4 flex-shrink-0 mt-0.5" />
+              <span>
+                You&apos;re signed in as <strong>{user.name}</strong> (customer). To join as a vendor,
+                create a <strong>new account with a different email address</strong>. Vendor and customer
+                accounts are separate.{" "}
+                <button
+                  type="button"
+                  onClick={() => setForm((f) => ({ ...f, role: "vendor" }))}
+                  className="underline font-semibold"
+                >
+                  Vendor tab is pre-selected below.
+                </button>
+              </span>
+            </div>
+          )}
 
           {/* Role selector */}
           <div className="grid grid-cols-2 gap-3 mb-6">
@@ -317,5 +351,20 @@ export default function SignUpPage() {
         </motion.div>
       </div>
     </div>
+  );
+}
+
+// Suspense wrapper required because SignUpForm uses useSearchParams()
+export default function SignUpPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <GiFullPizza className="h-12 w-12 text-primary animate-spin" style={{ animationDuration: "2s" }} />
+        </div>
+      }
+    >
+      <SignUpForm />
+    </Suspense>
   );
 }

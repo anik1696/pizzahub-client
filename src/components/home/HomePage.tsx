@@ -420,7 +420,7 @@ export default function HomePage() {
               {/* Only show vendor CTA when not logged in, or when logged in as a customer */}
               {(!user || user.role === "customer") && (
                 <Link
-                  href={user ? "/signup" : "/signup"}
+                  href={user ? "/signup?as=vendor" : "/signup"}
                   className="inline-flex items-center gap-2 bg-white text-gray-900 px-8 py-4 rounded-lg font-semibold text-base hover:bg-gray-100 transition-all"
                 >
                   Join as a Vendor
