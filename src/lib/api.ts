@@ -7,7 +7,10 @@ const api = axios.create({
 
 // Add request interceptor to include JWT token
 api.interceptors.request.use((config) => {
-  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const token =
+    typeof window !== "undefined"
+      ? localStorage.getItem("pizzahub_token") || localStorage.getItem("token")
+      : null;
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -20,6 +23,7 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       if (typeof window !== "undefined") {
+        localStorage.removeItem("pizzahub_token");
         localStorage.removeItem("token");
       }
     }
