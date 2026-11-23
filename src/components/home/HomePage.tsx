@@ -417,19 +417,22 @@ export default function HomePage() {
               >
                 Order Now <FiArrowRight />
               </Link>
-              {/* Only show vendor CTA when not logged in, or when logged in as a customer */}
-              {(!user || user.role === "customer") && (
+              {!user ? (
                 <Link
-                  href={user ? "/signup?as=vendor" : "/signup"}
+                  href="/signup"
                   className="inline-flex items-center gap-2 bg-white text-gray-900 px-8 py-4 rounded-lg font-semibold text-base hover:bg-gray-100 transition-all"
                 >
                   Join as a Vendor
                 </Link>
-              )}
-              {/* When logged in as vendor or admin, show dashboard button instead */}
-              {user && user.role !== "customer" && (
+              ) : (
                 <Link
-                  href={user.role === "admin" ? "/dashboard/admin" : "/dashboard/vendor"}
+                  href={
+                    user.role === "admin"
+                      ? "/dashboard/admin"
+                      : user.role === "vendor"
+                      ? "/dashboard/vendor"
+                      : "/dashboard/customer"
+                  }
                   className="inline-flex items-center gap-2 bg-white text-gray-900 px-8 py-4 rounded-lg font-semibold text-base hover:bg-gray-100 transition-all"
                 >
                   My Dashboard <FiArrowRight />
