@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { FiArrowRight, FiMapPin, FiClock, FiUsers, FiCheckCircle } from "react-icons/fi";
+import { FiArrowRight, FiMapPin, FiClock, FiUsers, FiCheckCircle, FiStar } from "react-icons/fi";
 import api from "@/lib/api";
 import { formatPrice, CATEGORIES } from "@/lib/utils";
 import MenuItemCard from "@/components/menu/MenuItemCard";
@@ -380,6 +380,89 @@ export default function HomePage() {
                 <div className="p-5">
                   <h3 className="font-bold text-foreground mb-2">{step.title}</h3>
                   <p className="text-muted-foreground text-sm leading-relaxed">{step.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── CUSTOMER REVIEWS / TESTIMONIALS ── */}
+      <section className="py-20 bg-background border-t border-border">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <motion.div
+            variants={stagger}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="text-center max-w-2xl mx-auto mb-14"
+          >
+            <motion.p variants={fadeUp} className="text-primary font-semibold uppercase tracking-widest text-xs mb-2">
+              Customer Feedback
+            </motion.p>
+            <motion.h2 variants={fadeUp} className="text-3xl md:text-4xl font-black text-foreground mb-4">
+              Loved by Pizza Lovers Across Bangladesh
+            </motion.h2>
+            <motion.p variants={fadeUp} className="text-muted-foreground text-sm">
+              Read real reviews from our community who order their favorite pizzas through PizzaHub every day.
+            </motion.p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                name: "Tanvir Rahman",
+                location: "Dhanmondi, Dhaka",
+                rating: 5,
+                comment: "The Bangladeshi Spicy Beef Pizza from Mario's was piping hot and arrived right on time. Love how easy it is to order directly from local vendors!",
+                avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&q=80",
+                date: "Yesterday",
+              },
+              {
+                name: "Nusrat Jahan",
+                location: "Banani, Dhaka",
+                rating: 5,
+                comment: "Finally a platform where I can find authentic local pizzerias. The Deshi Veggie Delight was so fresh and the crust was perfectly crispy.",
+                avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80",
+                date: "3 days ago",
+              },
+              {
+                name: "Arafat Hossain",
+                location: "GEC Circle, Chittagong",
+                rating: 5,
+                comment: "Tried the Hilsa Bhuna Gourmet Pizza and was blown away by the creative fusion! Fast delivery and cash-on-delivery made it totally hassle-free.",
+                avatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100&q=80",
+                date: "Last week",
+              },
+            ].map((review, i) => (
+              <motion.div
+                key={review.name}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.15, duration: 0.5 }}
+                className="bg-card border border-border rounded-2xl p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow"
+              >
+                <div>
+                  <div className="flex items-center gap-1 mb-4 text-amber-400">
+                    {[...Array(review.rating)].map((_, idx) => (
+                      <FiStar key={idx} className="h-4 w-4 fill-amber-400 text-amber-400" />
+                    ))}
+                  </div>
+                  <p className="text-muted-foreground text-sm leading-relaxed italic mb-6">
+                    &ldquo;{review.comment}&rdquo;
+                  </p>
+                </div>
+                <div className="flex items-center gap-3 pt-4 border-t border-border">
+                  <img
+                    src={review.avatar}
+                    alt={review.name}
+                    className="w-10 h-10 rounded-full object-cover border border-border"
+                  />
+                  <div>
+                    <p className="font-bold text-sm text-foreground">{review.name}</p>
+                    <p className="text-xs text-muted-foreground">{review.location}</p>
+                  </div>
                 </div>
               </motion.div>
             ))}

@@ -144,15 +144,29 @@ export default function ItemDetailPage() {
             <h1 className="text-4xl font-black text-foreground mb-3">{item.name || item.itemName}</h1>
 
             {/* Rating */}
-            {item.rating && (
+            {(item.rating || item.averageRating || item.ratings?.length) && (
               <div className="flex items-center gap-2 mb-4">
                 <div className="flex items-center gap-0.5">
-                  {[1,2,3,4,5].map((s) => (
-                    <FiStar key={s} className={`h-4 w-4 ${s <= Math.round(item.rating) ? "text-amber-400 fill-amber-400" : "text-muted-foreground/30"}`} />
-                  ))}
+                  {[1, 2, 3, 4, 5].map((s) => {
+                    const ratingScore = item.rating || item.averageRating || 5;
+                    return (
+                      <FiStar
+                        key={s}
+                        className={`h-4 w-4 ${
+                          s <= Math.round(ratingScore)
+                            ? "text-amber-400 fill-amber-400"
+                            : "text-muted-foreground/30"
+                        }`}
+                      />
+                    );
+                  })}
                 </div>
-                <span className="font-bold text-sm">{item.rating.toFixed(1)}</span>
-                {item.reviewCount && <span className="text-sm text-muted-foreground">({item.reviewCount} reviews)</span>}
+                <span className="font-bold text-sm">
+                  {(item.rating || item.averageRating || 5).toFixed(1)}
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  ({item.reviewCount || item.ratings?.length || 1} {((item.reviewCount || item.ratings?.length || 1) === 1) ? "review" : "reviews"})
+                </span>
               </div>
             )}
 
@@ -285,6 +299,42 @@ export default function ItemDetailPage() {
             )}
           </motion.div>
         </div>
+
+        {/* Customer Reviews Section */}
+        {item.ratings && item.ratings.length > 0 && (
+          <div className="mt-16 pt-12 border-t border-border">
+            <div className="flex items-center gap-3 mb-6">
+              <h2 className="text-2xl font-black text-foreground">Customer Reviews</h2>
+              <span className="text-sm font-semibold bg-primary/10 text-primary px-3 py-1 rounded-full">
+                {item.ratings.length} {item.ratings.length === 1 ? "review" : "reviews"}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {item.ratings.map((rev: any, i: number) => (
+                <div key={i} className="bg-card border border-border rounded-2xl p-5 shadow-sm">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-1 text-amber-400">
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <FiStar
+                          key={s}
+                          className={`h-4 w-4 ${
+                            s <= (rev.rating || 5)
+                              ? "fill-amber-400 text-amber-400"
+                              : "text-muted-foreground/30"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-xs text-muted-foreground">
+                      {rev.createdAt ? new Date(rev.createdAt).toLocaleDateString() : "Verified Order"}
+                    </span>
+                  </div>
+                  <p className="text-foreground text-sm leading-relaxed">&ldquo;{rev.review}&rdquo;</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

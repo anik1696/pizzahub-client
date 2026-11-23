@@ -99,15 +99,15 @@ export default function AdminDashboard() {
             <FiUsers className="h-5 w-5 text-primary" />
             <h2 className="text-lg font-bold text-foreground">User Distribution</h2>
           </div>
-          <ResponsiveContainer width="100%" height={240}>
+          <ResponsiveContainer width="100%" height={260}>
             <PieChart>
               <Pie
                 data={userPieData}
                 cx="50%"
-                cy="45%"
-                innerRadius={60}
-                outerRadius={85}
-                paddingAngle={5}
+                cy="40%"
+                innerRadius={52}
+                outerRadius={78}
+                paddingAngle={6}
                 dataKey="value"
               >
                 {userPieData.map((entry, index) => (
@@ -117,7 +117,7 @@ export default function AdminDashboard() {
               <Tooltip
                 contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: "12px", fontSize: "13px" }}
               />
-              <Legend verticalAlign="bottom" height={36} />
+              <Legend verticalAlign="bottom" height={36} wrapperStyle={{ paddingTop: "12px" }} />
             </PieChart>
           </ResponsiveContainer>
         </motion.div>
