@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api";
-import { formatPrice, formatDate, getStatusColor } from "@/lib/utils";
+import { formatPrice, formatDate, getStatusColor, BD_LOCATIONS, CATEGORIES } from "@/lib/utils";
 import toast from "react-hot-toast";
 import { FiEdit2, FiTrash2, FiToggleLeft, FiToggleRight } from "react-icons/fi";
 
@@ -181,12 +181,14 @@ export default function VendorMenuItemsPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1.5">Price ($)</label>
-                  <input type="number" step="0.01" value={editForm.price} onChange={(e) => setEditForm((f) => ({ ...f, price: e.target.value }))} required className="w-full px-4 py-2.5 border border-border rounded-xl bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                  <label className="block text-sm font-medium mb-1.5">Price in Taka (৳)</label>
+                  <input type="number" step="1" min="1" value={editForm.price} onChange={(e) => setEditForm((f) => ({ ...f, price: e.target.value }))} required className="w-full px-4 py-2.5 border border-border rounded-xl bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1.5">Location</label>
-                  <input value={editForm.location} onChange={(e) => setEditForm((f) => ({ ...f, location: e.target.value }))} required className="w-full px-4 py-2.5 border border-border rounded-xl bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                  <select value={editForm.location} onChange={(e) => setEditForm((f) => ({ ...f, location: e.target.value }))} required className="w-full px-4 py-2.5 border border-border rounded-xl bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
+                    {BD_LOCATIONS.map((l) => <option key={l} value={l}>{l}</option>)}
+                  </select>
                 </div>
               </div>
               <div>
