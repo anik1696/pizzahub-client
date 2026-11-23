@@ -9,20 +9,36 @@ const globalWithMongo = global as typeof globalThis & {
 
 function getDb() {
   if (!globalWithMongo._mongoClient) {
-    const client = new MongoClient(process.env.MONGODB_URI!);
+    const uri = process.env.MONGODB_URI;
+    if (!uri) {
+      // During build/static analysis, return a stub — real connections only happen at runtime
+      return null as any;
+    }
+    const client = new MongoClient(uri);
     globalWithMongo._mongoClient = client;
     globalWithMongo._mongoClientPromise = client.connect();
   }
-  return globalWithMongo._mongoClient.db("pizzahub");
+  return globalWithMongo._mongoClient!.db("pizzahub");
+}
+
+function getDbSafe() {
+  try {
+    return getDb();
+  } catch {
+    return null as any;
+  }
 }
 
 export const auth = betterAuth({
-  database: mongodbAdapter(getDb()),
+  database: mongodbAdapter(getDbSafe()),
   secret: process.env.BETTER_AUTH_SECRET!,
   baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
   trustedOrigins: [
     process.env.BETTER_AUTH_URL || "http://localhost:3000",
     "http://localhost:5000",
+    "http://localhost:3000",
+    "https://pizzahub-client-k8g78os9r-sahreyar-s-team.vercel.app",
+    ...(process.env.NEXT_PUBLIC_API_URL ? [process.env.NEXT_PUBLIC_API_URL] : []),
   ],
   emailAndPassword: {
     enabled: true,
