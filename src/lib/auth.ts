@@ -37,7 +37,9 @@ export const auth = betterAuth({
     process.env.BETTER_AUTH_URL || "http://localhost:3000",
     "http://localhost:5000",
     "http://localhost:3000",
-    "https://pizzahub-client-k8g78os9r-sahreyar-s-team.vercel.app",
+    "https://pizzahub-client-sable.vercel.app",
+    "https://pizzahub-client-qqp0i4ecc-sahreyar-s-team.vercel.app",
+    "https://pizzahub-server-pthr.onrender.com",
     ...(process.env.NEXT_PUBLIC_API_URL ? [process.env.NEXT_PUBLIC_API_URL] : []),
   ],
   emailAndPassword: {
