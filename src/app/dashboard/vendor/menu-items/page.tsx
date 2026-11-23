@@ -30,7 +30,7 @@ export default function VendorMenuItemsPage() {
     try {
       const res = await api.get("/api/menu-items/vendor/my-items");
       setItems(res.data);
-    } catch { toast.error("Failed to load menu items"); }
+    } catch { toast.error("Could not load menu items."); }
     finally { setPageLoading(false); }
   };
 
@@ -39,9 +39,9 @@ export default function VendorMenuItemsPage() {
     setDeleting(id);
     try {
       await api.delete(`/api/menu-items/${id}`);
-      toast.success("Item deleted");
+      toast.success("Item removed.");
       fetchItems();
-    } catch (e: any) { toast.error(e.response?.data?.message || "Delete failed"); }
+    } catch (e: any) { toast.error(e.response?.data?.message || "Could not remove item."); }
     finally { setDeleting(null); }
   };
 
@@ -49,9 +49,9 @@ export default function VendorMenuItemsPage() {
     setToggling(id);
     try {
       await api.patch(`/api/menu-items/${id}/toggle`);
-      toast.success("Availability updated");
+      toast.success("Status updated.");
       fetchItems();
-    } catch (e: any) { toast.error(e.response?.data?.message || "Update failed"); }
+    } catch (e: any) { toast.error(e.response?.data?.message || "Could not update status."); }
     finally { setToggling(null); }
   };
 
@@ -65,10 +65,10 @@ export default function VendorMenuItemsPage() {
     setSaving(true);
     try {
       await api.put(`/api/menu-items/${editItem._id}`, editForm);
-      toast.success("Item updated successfully");
+      toast.success("Changes saved.");
       setEditItem(null);
       fetchItems();
-    } catch (e: any) { toast.error(e.response?.data?.message || "Update failed"); }
+    } catch (e: any) { toast.error(e.response?.data?.message || "Could not save changes."); }
     finally { setSaving(false); }
   };
 

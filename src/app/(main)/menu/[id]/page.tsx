@@ -55,7 +55,7 @@ export default function ItemDetailPage() {
     e.preventDefault();
     if (!user) { router.push("/signin"); return; }
     if (!orderForm.deliveryDate || !orderForm.deliveryAddress) {
-      toast.error("Please fill in all required fields");
+      toast.error("Delivery date and address are required.");
       return;
     }
     setOrderLoading(true);
@@ -66,11 +66,11 @@ export default function ItemDetailPage() {
         deliveryAddress: orderForm.deliveryAddress,
         message: orderForm.message,
       });
-      toast.success("Order placed successfully! 🍕");
+      toast.success("Order submitted.");
       setOrderOpen(false);
       setOrderForm({ deliveryDate: "", deliveryAddress: "", message: "" });
     } catch (e: any) {
-      toast.error(e.response?.data?.message || "Failed to place order");
+      toast.error(e.response?.data?.message || "Could not place order.");
     } finally {
       setOrderLoading(false);
     }
@@ -85,11 +85,11 @@ export default function ItemDetailPage() {
       return;
     }
     if (user.role !== "customer") {
-      toast.error("Only customers can submit reviews.");
+      toast.error("Only customer accounts can leave reviews.");
       return;
     }
     if (!reviewText.trim()) {
-      toast.error("Please write a review comment.");
+      toast.error("Please write a brief comment.");
       return;
     }
 
@@ -100,11 +100,11 @@ export default function ItemDetailPage() {
         review: reviewText.trim(),
       });
       setItem(res.data.item);
-      toast.success("Review submitted! Thank you ⭐");
+      toast.success("Review posted.");
       setShowReviewForm(false);
       setReviewText("");
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to submit review");
+      toast.error(err.response?.data?.message || "Could not post review.");
     } finally {
       setReviewLoading(false);
     }
@@ -333,7 +333,7 @@ export default function ItemDetailPage() {
                     disabled={orderLoading}
                     className="flex-1 py-3 bg-primary text-primary-foreground rounded-xl text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-60"
                   >
-                    {orderLoading ? "Placing..." : "Confirm Order 🍕"}
+                    {orderLoading ? "Placing..." : "Confirm Order"}
                   </button>
                 </div>
               </motion.form>
@@ -453,7 +453,7 @@ export default function ItemDetailPage() {
                   disabled={reviewLoading}
                   className="px-6 py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-semibold hover:bg-primary/90 transition-all shadow-md shadow-primary/20 disabled:opacity-60"
                 >
-                  {reviewLoading ? "Submitting..." : myReview ? "Update Review" : "Submit Review ⭐"}
+                  {reviewLoading ? "Submitting..." : myReview ? "Update Review" : "Submit Review"}
                 </button>
               </div>
             </motion.form>

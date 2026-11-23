@@ -33,7 +33,7 @@ export default function AdminUsersClient() {
       if (roleFilter) params.role = roleFilter;
       const res = await api.get("/api/users", { params });
       setUsers(res.data);
-    } catch { toast.error("Failed to load users"); }
+    } catch { toast.error("Could not load users."); }
     finally { setPageLoading(false); }
   };
 
@@ -41,9 +41,9 @@ export default function AdminUsersClient() {
     setBlocking(userId);
     try {
       await api.patch(`/api/users/${userId}/block`, { isBlocked: !isBlocked });
-      toast.success(`User ${isBlocked ? "unblocked" : "blocked"} successfully`);
+      toast.success(isBlocked ? "User unblocked." : "User suspended.");
       fetchUsers();
-    } catch (e: any) { toast.error(e.response?.data?.message || "Failed to update user"); }
+    } catch (e: any) { toast.error(e.response?.data?.message || "Could not update user status."); }
     finally { setBlocking(null); }
   };
 

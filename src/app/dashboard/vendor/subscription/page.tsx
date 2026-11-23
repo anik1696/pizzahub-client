@@ -34,15 +34,15 @@ export default function SubscriptionPage() {
       if (url) {
         window.location.href = url;
       } else {
-        toast.error("Could not start checkout. Please try again.");
+        toast.error("Unable to initialize checkout session.");
       }
     } catch (err: any) {
       if (err.response?.data?.message?.includes("already on the Premium")) {
-        toast.success("You are already on the Premium plan!");
+        toast.success("Premium is currently active.");
         await refreshUser();
         setIsPremium(true);
       } else {
-        toast.error(err.response?.data?.message || "Checkout failed. Please try again.");
+        toast.error(err.response?.data?.message || "Unable to proceed to checkout.");
       }
     } finally {
       setCheckingOut(false);

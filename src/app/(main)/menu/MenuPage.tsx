@@ -54,7 +54,7 @@ export default function MenuPage() {
       <div className="bg-gradient-to-br from-red-950 via-red-900 to-orange-900 py-16">
         <div className="container mx-auto px-4 max-w-7xl text-center">
           <motion.h1 initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-4xl md:text-6xl font-black text-white mb-4">
-            Browse Our Menu 🍕
+            Browse Our Menu
           </motion.h1>
           <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-white/70 text-lg">
             {total > 0 ? `${total} delicious items available` : "Explore our pizza collection"}

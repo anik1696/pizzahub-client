@@ -28,7 +28,7 @@ export default function CustomerOrdersPage() {
     try {
       const res = await api.get("/api/orders/my-orders");
       setOrders(res.data);
-    } catch { toast.error("Failed to load orders"); }
+    } catch { toast.error("Could not load orders."); }
     finally { setOrdersLoading(false); }
   };
 
@@ -37,10 +37,10 @@ export default function CustomerOrdersPage() {
     setCancelling(orderId);
     try {
       await api.patch(`/api/orders/${orderId}/cancel`);
-      toast.success("Order cancelled successfully");
+      toast.success("Order cancelled.");
       fetchOrders();
     } catch (e: any) {
-      toast.error(e.response?.data?.message || "Failed to cancel order");
+      toast.error(e.response?.data?.message || "Could not cancel order.");
     } finally {
       setCancelling(null);
     }

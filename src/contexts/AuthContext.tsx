@@ -68,7 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             await authClient.signOut();
             setUser(null);
             localStorage.removeItem("pizzahub_token");
-            toast.error(data.error || "Your account has been blocked by an administrator.");
+            toast.error(data.error || "This account has been suspended.");
             setLoading(false);
             return;
           }
@@ -93,7 +93,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           await authClient.signOut();
           setUser(null);
           localStorage.removeItem("pizzahub_token");
-          toast.error("Your account has been blocked by an administrator.");
+          toast.error("This account has been suspended.");
           setLoading(false);
           return;
         }
@@ -124,9 +124,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string) => {
     const result = await authClient.signIn.email({ email, password });
-    if (result.error) throw new Error(result.error.message || "Login failed");
+    if (result.error) throw new Error(result.error.message || "Invalid email or password.");
     await fetchUser();
-    toast.success("Logged in successfully!");
+    toast.success("Welcome back.");
   };
 
   const register = async (data: RegisterData) => {
@@ -148,11 +148,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (!res.ok) {
       const errData = await res.json().catch(() => ({}));
-      throw new Error(errData.error || "Registration failed");
+      throw new Error(errData.error || "Could not complete registration.");
     }
 
     await fetchUser();
-    toast.success("Account created successfully!");
+    toast.success("Account created.");
   };
 
   const loginWithGoogle = async () => {
@@ -166,7 +166,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await authClient.signOut();
     setUser(null);
     localStorage.removeItem("pizzahub_token");
-    toast.success("Logged out successfully");
+    toast.success("Signed out.");
     router.push("/");
   };
 

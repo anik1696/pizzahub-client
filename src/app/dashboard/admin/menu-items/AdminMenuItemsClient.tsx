@@ -35,7 +35,7 @@ export default function AdminMenuItemsClient() {
       if (categoryFilter) params.category = categoryFilter;
       const res = await api.get("/api/menu-items/admin/all", { params });
       setItems(res.data);
-    } catch { toast.error("Failed to load items"); }
+    } catch { toast.error("Could not load items."); }
     finally { setPageLoading(false); }
   };
 
@@ -43,9 +43,10 @@ export default function AdminMenuItemsClient() {
     setUpdating(id);
     try {
       await api.patch(`/api/menu-items/admin/${id}/status`, { status });
-      toast.success(`Item ${status}`);
+      const labels: Record<string, string> = { approved: "Item approved.", rejected: "Item rejected.", inactive: "Item deactivated." };
+      toast.success(labels[status] || "Status updated.");
       fetchItems();
-    } catch (e: any) { toast.error(e.response?.data?.message || "Failed"); }
+    } catch (e: any) { toast.error(e.response?.data?.message || "Status update failed."); }
     finally { setUpdating(null); }
   };
 
@@ -54,9 +55,9 @@ export default function AdminMenuItemsClient() {
     setUpdating(id);
     try {
       await api.delete(`/api/menu-items/admin/${id}`);
-      toast.success("Item deleted");
+      toast.success("Item removed.");
       fetchItems();
-    } catch (e: any) { toast.error(e.response?.data?.message || "Delete failed"); }
+    } catch (e: any) { toast.error(e.response?.data?.message || "Could not delete item."); }
     finally { setUpdating(null); }
   };
 

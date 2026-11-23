@@ -59,31 +59,31 @@ export default function AddMenuItemPage() {
     const toUpload = files.slice(0, remaining);
 
     if (toUpload.length === 0) {
-      toast.error("Maximum 4 images allowed");
+      toast.error("Limit of 4 images reached.");
       return;
     }
 
     setUploading(true);
-    const toastId = toast.loading(`Uploading ${toUpload.length} image(s) to ImgBB…`);
+    const toastId = toast.loading(toUpload.length === 1 ? "Uploading image..." : "Uploading images...");
 
     try {
       const urls: string[] = [];
       for (const file of toUpload) {
         if (!file.type.startsWith("image/")) {
-          toast.error(`${file.name} is not an image`, { id: toastId });
+          toast.error(`${file.name} is not a valid image.`, { id: toastId });
           continue;
         }
         if (file.size > 10 * 1024 * 1024) {
-          toast.error(`${file.name} exceeds 10 MB`, { id: toastId });
+          toast.error(`${file.name} exceeds the 10 MB limit.`, { id: toastId });
           continue;
         }
         const url = await uploadToImgBB(file);
         if (url) urls.push(url);
       }
       setImages((prev) => [...prev, ...urls]);
-      toast.success(`${urls.length} image(s) uploaded!`, { id: toastId });
+      toast.success(urls.length === 1 ? "Image uploaded." : "Images uploaded.", { id: toastId });
     } catch (err: any) {
-      toast.error("Image upload failed. Try a URL instead.", { id: toastId });
+      toast.error("Upload failed. Please try again.", { id: toastId });
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -94,11 +94,11 @@ export default function AddMenuItemPage() {
   const addImageUrl = () => {
     if (!imageUrl.trim()) return;
     if (!/^https?:\/\/.+\..+/.test(imageUrl.trim())) {
-      toast.error("Please enter a valid image URL (must start with http/https)");
+      toast.error("Please enter a valid HTTP or HTTPS image URL.");
       return;
     }
-    if (images.length >= 4) { toast.error("Maximum 4 images allowed"); return; }
-    if (images.includes(imageUrl.trim())) { toast.error("This URL is already added"); return; }
+    if (images.length >= 4) { toast.error("Limit of 4 images reached."); return; }
+    if (images.includes(imageUrl.trim())) { toast.error("This image has already been added."); return; }
     setImages((prev) => [...prev, imageUrl.trim()]);
     setImageUrl("");
     setPreviewError(false);
@@ -109,7 +109,7 @@ export default function AddMenuItemPage() {
   /* ── Form submit ───────────────────────────────────────── */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (images.length === 0) { toast.error("Please add at least one image"); return; }
+    if (images.length === 0) { toast.error("At least one image is required."); return; }
     setSubmitting(true);
     setPlanLimitHit(false);
     try {
@@ -119,14 +119,14 @@ export default function AddMenuItemPage() {
         image: images[0],
         images,
       });
-      toast.success("Menu item submitted! Pending admin approval.");
+      toast.success("Item submitted for approval.");
       router.push("/dashboard/vendor/menu-items");
     } catch (err: any) {
       if (err.response?.data?.code === "PLAN_LIMIT") {
         setPlanLimitHit(true);
-        toast.error("Free plan limit reached (3 items max).");
+        toast.error("Free plan limit reached. Upgrade for unlimited items.");
       } else {
-        toast.error(err.response?.data?.message || "Failed to create item");
+        toast.error(err.response?.data?.message || "Could not save item.");
       }
     } finally {
       setSubmitting(false);
@@ -377,7 +377,7 @@ export default function AddMenuItemPage() {
             disabled={submitting || uploading}
             className="flex-1 py-3.5 bg-primary text-primary-foreground rounded-xl font-semibold text-sm hover:bg-primary/90 transition-all disabled:opacity-60 shadow-lg shadow-primary/20"
           >
-            {submitting ? "Submitting…" : "Submit for Approval 🍕"}
+            {submitting ? "Submitting..." : "Submit for Approval"}
           </button>
         </div>
       </form>

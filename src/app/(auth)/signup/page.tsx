@@ -68,12 +68,12 @@ function SignUpForm() {
           setForm((f) => ({ ...f, image: data.data.display_url }));
           setImagePreview(data.data.display_url);
         } else {
-          toast.error("Image upload failed");
+          toast.error("Could not upload image. Please try again.");
         }
         setUploadingImage(false);
       };
     } catch {
-      toast.error("Image upload failed");
+      toast.error("Could not upload image. Please try again.");
       setUploadingImage(false);
     }
   };

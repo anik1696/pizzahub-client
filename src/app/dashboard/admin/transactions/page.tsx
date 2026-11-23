@@ -19,7 +19,7 @@ export default function AdminTransactionsPage() {
       if (user.role !== "admin") { router.push("/dashboard"); return; }
       api.get("/api/payments/transactions")
         .then((r) => setTransactions(r.data))
-        .catch(() => toast.error("Failed to load transactions"))
+        .catch(() => toast.error("Could not load transactions."))
         .finally(() => setPageLoading(false));
     }
   }, [user, loading]);

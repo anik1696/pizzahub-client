@@ -28,7 +28,7 @@ export default function VendorOrdersPage() {
     try {
       const res = await api.get("/api/orders/vendor-orders");
       setOrders(res.data);
-    } catch { toast.error("Failed to load orders"); }
+    } catch { toast.error("Could not load orders."); }
     finally { setPageLoading(false); }
   };
 
@@ -36,9 +36,9 @@ export default function VendorOrdersPage() {
     setUpdating(orderId);
     try {
       await api.patch(`/api/orders/${orderId}/status`, { status });
-      toast.success(`Order ${status}`);
+      toast.success(status === "accepted" ? "Order accepted." : "Order declined.");
       fetchOrders();
-    } catch (e: any) { toast.error(e.response?.data?.message || "Failed to update order"); }
+    } catch (e: any) { toast.error(e.response?.data?.message || "Could not update order."); }
     finally { setUpdating(null); }
   };
 

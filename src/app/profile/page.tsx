@@ -89,7 +89,7 @@ export default function ProfilePage() {
             setForm((f) => ({ ...f, image: data.data.display_url }));
             setImagePreview(data.data.display_url);
             setCustomUrl(data.data.display_url);
-            toast.success("Image uploaded to ImgBB!");
+            toast.success("Photo uploaded.");
             setUploadingImage(false);
             return;
           }
@@ -103,9 +103,9 @@ export default function ProfilePage() {
       setForm((f) => ({ ...f, image: dataUrl }));
       setImagePreview(dataUrl);
       setCustomUrl(dataUrl);
-      toast.success("Profile photo ready! Click 'Save Changes' to update.");
+      toast.success("Photo selected. Save changes to update.");
     } catch {
-      toast.error("Could not process image file. You can also paste an Image URL below.");
+      toast.error("Unsupported image file. Please try another image or URL.");
     } finally {
       setUploadingImage(false);
     }
@@ -115,7 +115,7 @@ export default function ProfilePage() {
     if (!customUrl.trim()) return;
     setForm((f) => ({ ...f, image: customUrl.trim() }));
     setImagePreview(customUrl.trim());
-    toast.success("Image URL applied! Click 'Save Changes' to update.");
+    toast.success("Image URL applied.");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -128,9 +128,9 @@ export default function ProfilePage() {
         businessName: form.businessName,
       });
       await refreshUser();
-      toast.success("Profile updated successfully!");
+      toast.success("Profile updated.");
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Failed to update profile");
+      toast.error(err.response?.data?.message || "Could not update profile.");
     } finally {
       setSaving(false);
     }
