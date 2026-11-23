@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import { MongoClient } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 
 const globalWithMongo = global as typeof globalThis & { _setRoleMongo?: MongoClient };
 
@@ -13,43 +13,56 @@ async function getUsersCollection() {
   return globalWithMongo._setRoleMongo.db("pizzahub").collection("user");
 }
 
-// Called right after signUp.email() to persist the role and businessName
-// Better Auth ignores additionalFields in signUp.email() in some versions
+// Called to persist role and businessName for any signup/switch (Email & Google)
 export async function POST(req: NextRequest) {
   try {
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session?.user) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-    }
-
     const body = await req.json();
-    const { role, businessName } = body;
+    const { role, businessName, email: bodyEmail } = body;
 
     if (!role || !["customer", "vendor"].includes(role)) {
-      return NextResponse.json({ error: "Invalid role" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid role. Only customer or vendor permitted." }, { status: 400 });
+    }
+
+    const session = await auth.api.getSession({ headers: await headers() }).catch(() => null);
+    const targetEmail = session?.user?.email || bodyEmail;
+
+    if (!targetEmail && !session?.user?.id) {
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
     const col = await getUsersCollection();
 
-    // Find the user by session ID or email
+    const idQueries: any[] = [];
+    if (targetEmail) {
+      idQueries.push({ email: targetEmail });
+    }
+    if (session?.user?.id) {
+      try {
+        idQueries.push({ _id: new ObjectId(session.user.id) });
+      } catch (_) {}
+      idQueries.push({ _id: session.user.id });
+      idQueries.push({ id: session.user.id });
+    }
+
+    const existingUser = await col.findOne({ $or: idQueries });
+    if (!existingUser) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Safety: Never overwrite an admin account's role
+    if (existingUser.role === "admin") {
+      return NextResponse.json({ message: "Admin role preserved", role: "admin" });
+    }
+
     const updateFields: Record<string, string> = { role };
-    if (businessName && role === "vendor") {
+    if (businessName !== undefined) {
       updateFields.businessName = businessName;
     }
 
-    const result = await col.updateOne(
-      {
-        $or: [
-          { _id: session.user.id } as never,
-          { email: session.user.email },
-        ],
-      },
+    await col.updateOne(
+      { _id: existingUser._id },
       { $set: updateFields }
     );
-
-    if (result.matchedCount === 0) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
 
     return NextResponse.json({ success: true, role });
   } catch (err) {

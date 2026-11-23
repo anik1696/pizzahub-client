@@ -148,12 +148,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          email: data.email,
           role: data.role,
           businessName: data.businessName || "",
         }),
       });
-    } catch {
-      // Non-fatal — JWT fallback will still try to read from DB
+    } catch (e) {
+      console.error("set-role error:", e);
     }
 
     await fetchUser();

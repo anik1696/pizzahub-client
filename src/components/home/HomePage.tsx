@@ -419,7 +419,7 @@ export default function HomePage() {
               </Link>
               {!user ? (
                 <Link
-                  href="/signup"
+                  href="/signup?role=vendor"
                   className="inline-flex items-center gap-2 bg-white text-gray-900 px-8 py-4 rounded-lg font-semibold text-base hover:bg-gray-100 transition-all"
                 >
                   Join as a Vendor

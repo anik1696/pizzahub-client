@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { FiEye, FiEyeOff, FiMail, FiLock, FiUser, FiBriefcase, FiAlertCircle, FiImage } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
@@ -20,13 +20,15 @@ const passwordRules = (pw: string) => ({
 function SignUpForm() {
   const { register, loginWithGoogle, user, loading } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialRole = searchParams.get("role") === "vendor" ? "vendor" : "customer";
 
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
-    role: "customer" as "customer" | "vendor",
+    role: initialRole as "customer" | "vendor",
     businessName: "",
     image: "",
   });
@@ -105,6 +107,20 @@ function SignUpForm() {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleGoogleSignUp = () => {
+    try {
+      localStorage.setItem("pizzahub_intended_role", form.role);
+      if (form.businessName) {
+        localStorage.setItem("pizzahub_intended_business_name", form.businessName);
+      }
+      document.cookie = `pizzahub_intended_role=${form.role}; path=/; max-age=600`;
+      if (form.businessName) {
+        document.cookie = `pizzahub_intended_business_name=${encodeURIComponent(form.businessName)}; path=/; max-age=600`;
+      }
+    } catch (_) {}
+    loginWithGoogle();
   };
 
   return (
@@ -320,7 +336,8 @@ function SignUpForm() {
           </div>
 
           <button
-            onClick={loginWithGoogle}
+            type="button"
+            onClick={handleGoogleSignUp}
             className="w-full flex items-center justify-center gap-3 py-3.5 border border-border rounded-xl font-medium hover:bg-accent transition-colors text-sm"
           >
             <FcGoogle className="h-5 w-5" /> Sign Up with Google
