@@ -130,31 +130,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const register = async (data: RegisterData) => {
-    const result = await authClient.signUp.email({
-      email: data.email,
-      password: data.password,
-      name: data.name,
-      image: data.image || "",
-      role: data.role,
-      businessName: data.businessName || "",
-      callbackURL: "/",
-    } as Parameters<typeof authClient.signUp.email>[0]);
-    if (result.error) throw new Error(result.error.message || "Registration failed");
+    // Use our atomic /api/signup route which creates the user AND sets the
+    // correct role in one server-side request — no race conditions.
+    const res = await fetch("/api/signup", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        image: data.image || "",
+        role: data.role,
+        businessName: data.businessName || "",
+      }),
+    });
 
-    // Better Auth may not persist additionalFields from signUp — patch role explicitly
-    try {
-      await fetch("/api/set-role", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: data.email,
-          role: data.role,
-          businessName: data.businessName || "",
-        }),
-      });
-    } catch (e) {
-      console.error("set-role error:", e);
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.error || "Registration failed");
     }
 
     await fetchUser();
